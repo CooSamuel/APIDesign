@@ -9,7 +9,7 @@ basePath: "/"
 tags:
 - name: "message"
   description: "Everything about your Messages"
-- name: "comments"
+- name: "comment"
   description: "Everything about your Comments"
 - name: "user"
   description: "Operations about user"
@@ -32,6 +32,8 @@ paths:
       responses:
         200:
           description: "Success"
+        404: 
+          description: "Not Found"
 
     post:
       tags:
@@ -54,17 +56,6 @@ paths:
         405:
           description: "Invalid input"
 
-    delete:
-      tags:
-      - "message"
-      summary: "Delete a new message"
-      description: ""
-      operationId: "deleteMessage"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-
   /message/{msgId}:
     get:
       tags:
@@ -79,8 +70,54 @@ paths:
       responses:
         200:
           description: "Success"
+          
+    delete:
+        tags:
+        - "message"
+        summary: "Delete a new message"
+        description: ""
+        operationId: "deleteMessage"
+        consumes:
+        - "application/json"
+        produces:
+        - "application/json"
   
-
+  /comment/{msgId}:
+    get:
+      tags:
+      - "comment"
+      summary: "Get comments"
+      description: "Get comments by message id"
+      operationId: "getCommentsByMessage"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+    post:
+      tags:
+      - "comment"
+      summary: "Create new comment"
+      description: "Create new comment under message"
+      operationId: "createComment"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+    
+  /comment/{comId}:
+    delete:
+      tags:
+      - "comment"
+      summary: "Delete comment by id"
+      description: "Delete comment"
+      operationId: "deleteComment"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
  
   /user:
     post:
@@ -98,71 +135,114 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/CreateUser"
+      - in: "query"
+        name: "name"
+        description: "Created user object" 
+        required: true
+        schema:
+          $ref: "#/definitions/CreateUser"
       responses:
         200:
           description: "successful operation"
           schema:
             $ref: "#/definitions/SuccessfulCreatedUser"
 
-  /user/login:
-    post:
+  /user/{userId}:
+    get:
       tags:
       - "user"
-      summary: "Logs user into the system"
+      summary: "Get user by user id"
       description: ""
-      operationId: "loginUser"
+      operationId: "getUserById"
       produces:
       - "application/json"
       parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
+      - name: "userId"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
         required: true
         type: "string"
       responses:
         200:
           description: "successful operation"
           schema:
-            type: "string"
-          headers:
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
+            $ref: "#/definitions/User"
         400:
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"
+
+    put:
       tags:
       - "user"
-      summary: "Logs out current logged in user session"
+      summary: "update user info"
       description: ""
-      operationId: "logoutUser"
+      operationId: "updateUser"
       produces:
-      - "application/xml"
       - "application/json"
-      parameters: []
+      parameters:
+      - name: "username"
+        in: "body"
+        description: "The user name for login"
+        required: true
+        type: "string"
       responses:
-        default:
+        200:
           description: "successful operation"
-  /user/{username}:
+  
+  /like/{type}/{id}:
+    post:
+      tags:
+      - "like"
+      summary: "Create new like"
+      description: ""
+      operationId: "createLike"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "user"
+        description: "Created user object" 
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NotOK"
+        400:
+          description: ""
+
+    delete:
+      tags:
+      - "like"
+      summary: "cancel like"
+      description: ""
+      operationId: "deleteLike"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object" 
+        required: true
+        schema:
+          $ref: "#/definitions/NotOK"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NotOK"
+
+  /notification/{userId}:
     get:
       tags:
-      - "user"
-      summary: "Get user by user name"
+      - "notification"
+      summary: "get existing notifications"
       description: ""
-      operationId: "getUserByName"
+      operationId: "getNotifications"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "username"
@@ -179,90 +259,27 @@ paths:
           description: "Invalid username supplied"
         404:
           description: "User not found"
+      
+  /notification/{id}:
     put:
       tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
+      - "notification"
+      summary: "update notification"
+      description: "update notificaiton based on id"
+      operationId: "updateNotifications"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
       - in: "body"
-        name: "body"
-        description: "Updated user object"
+        name: "notification"
+        description: "Created notificaiton object" 
         required: true
         schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
+          $ref: "#/definitions/Notification"
+      
+      
 
 definitions:
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-        default: false
-    xml:
-      name: "Order"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-
   # post body for /user
   CreateUser:
     type: "object"
@@ -313,16 +330,7 @@ definitions:
         type: "integer"
         format: "int32"
         description: "User Status"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
+
   Message:
     type: "object"
     required:
@@ -347,18 +355,6 @@ definitions:
         - "available"
         - "pending"
         - "sold"
-    xml:
-      name: "Pet"
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
   NotOK:
     type: "object"
     properties:
