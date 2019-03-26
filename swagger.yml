@@ -1,0 +1,480 @@
+swagger: "2.0"
+info:
+  description: "api demo"
+  version: "1.0.0"
+  title: "Paperwall"
+
+host: "api.stemaker.top"
+basePath: "/"
+tags:
+- name: "message"
+  description: "Everything about your Messages"
+- name: "comment"
+  description: "Everything about your Comments"
+- name: "user"
+  description: "Operations about user"
+schemes:
+- "https"
+- "http"
+# APIs starts from here
+paths:
+  /message:
+    get:
+      tags:
+      - "message"
+      summary: "get existing messages"
+      description: "default to get latest"
+      operationId: "getMessages"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+        404: 
+          description: "Not Found"
+
+    post:
+      tags:
+      - "message"
+      summary: "Add a new message"
+      description: ""
+      operationId: "addMessage"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Message object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Message"
+      responses:
+        405:
+          description: "Invalid input"
+
+  /message/{msgId}:
+    get:
+      tags:
+      - "message"
+      summary: "get a message by _id"
+      description: ""
+      operationId: "getMessage"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+          
+    delete:
+        tags:
+        - "message"
+        summary: "Delete a new message"
+        description: ""
+        operationId: "deleteMessage"
+        consumes:
+        - "application/json"
+        produces:
+        - "application/json"
+  
+  /comment:
+    get:
+      tags:
+      - "comment"
+      summary: "Get comments"
+      description: "Get all existing comments"
+      operationId: "getComments"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+
+  /comment/{msgId}:
+    get:
+      tags:
+      - "comment"
+      summary: "Get comments"
+      description: "Get comments by message id"
+      operationId: "getComment"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+    post:
+      tags:
+      - "comment"
+      summary: "Create new comment"
+      description: "Create new comment under message"
+      operationId: "createComment"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+    
+  /comment/{comId}:
+    delete:
+      tags:
+      - "comment"
+      summary: "Delete comment by id"
+      description: "Delete comment"
+      operationId: "deleteComment"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+
+  /user:
+    post:
+      tags:
+      - "user"
+      summary: "Create new user"
+      description: "Gets session key unionId and openId from wechat adn save to database."
+      operationId: "createUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object" 
+        required: true
+        schema:
+          $ref: "#/definitions/CreateUser"
+      - in: "query"
+        name: "name"
+        description: "Created user object" 
+        required: true
+        schema:
+          $ref: "#/definitions/CreateUser"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SuccessfulCreatedUser"
+
+  /user/{_id}:
+    get:
+      tags:
+      - "user"
+      summary: "Get user by user id"
+      description: ""
+      operationId: "getUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        400:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"
+
+    put:
+      tags:
+      - "user"
+      summary: "update user info"
+      description: ""
+      operationId: "updateUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "body"
+        description: "The user name for login"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+  
+    delete:
+      tags:
+      - "user"
+      summary: "delete user"
+      description: ""
+      operationId: "deleteUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "body"
+        description: "The user name for login"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Delete successfully"
+        
+  /like/{type}/{id}:
+    post:
+      tags:
+      - "like"
+      summary: "Create new like"
+      description: ""
+      operationId: "createLike"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "user"
+        description: "Created Like object" 
+        required: true
+        schema:
+          $ref: "#/definitions/LikeBody"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SuccessLike"
+        400:
+          description: "fail to add"
+          schema:
+            $ref: "#/definitions/FailedLike"
+
+    delete:
+      tags:
+      - "like"
+      summary: "cancel like"
+      description: ""
+      operationId: "deleteLike"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Cancel Like" 
+        required: true
+        schema:
+          $ref: "#/definitions/LikeBody"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/SuccessLike"
+        400:
+          description: "fail to cancel"
+          schema:
+            $ref: "#/definitions/FailedLike"
+
+  /notification/{userId}:
+    get:
+      tags:
+      - "notification"
+      summary: "get existing notifications"
+      description: ""
+      operationId: "getNotifications"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Notification"
+        400:
+          description: "Invalid username supplied"
+        404:
+          description: "User not found"
+      
+  /notification/{id}:
+    put:
+      tags:
+      - "notification"
+      summary: "update notification"
+      description: "update notificaiton based on id"
+      operationId: "updateNotifications"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "notification"
+        description: "Created notificaiton object" 
+        required: true
+        schema:
+          $ref: "#/definitions/Notification"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Notification"
+      
+
+definitions:
+  # post body for /user
+  CreateUser:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      openId:
+        type: "string"
+      unionId:
+        type: "string"
+      userInfo:
+        type: "object"
+        properties:
+          gender: 
+            type: "string"
+            example: "f"
+          major:
+            type: "string"
+          grade:
+            type: "string"
+
+  # response for /user
+  SuccessfulCreatedUser:
+    type: "object"
+    properties:
+      _id: 
+        type: "string"
+
+  User:
+    type: "object"
+    properties:
+      openId:
+        type: "String"
+      unionId:
+        type: "string"
+      userInfo:
+        nickName: "String"
+        gender: "String"
+        city: "String"
+        language: "String"
+        province: "String"
+        country: "String"
+        avatarUrl: "String"
+      createdAt:
+        type: "String"
+        default: Date.now
+
+  Message:
+    type: "object"
+    required:
+    - "user"
+    - "createdAt"
+    properties:
+      _id:
+        type: "string"
+      content:
+        type: "string"
+      location:
+        type: "string"
+        example: "IR"
+      tags:
+        type: "array"
+        items:
+          type: "string"
+
+  Comment:
+    type: "object"
+    required:
+    - "user"
+    - "message"
+    - "createdAt"
+    properties:
+      _id:
+        type: "string"
+      content:
+        type: "string"
+      
+
+  Notification:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+      fromUser:
+        schema:  
+          $ref: "#/definitions/User"
+
+  NotOK:
+    type: "object"
+    properties:
+      notFinish:
+        type: "string"
+        example: "To be continue..."
+
+  Like:
+    type: "object"
+    properties:
+      _id:
+        type: "ObjectId"
+      user:
+        type: "ObjectId"
+      type:
+        type: "string"
+      message:
+        type: "ObjectId"
+      comment:
+        type: "ObjcetId"
+
+
+  LikeBody:
+    type: "object"
+    properties:
+      userId:
+        type: "ObjectId"
+
+
+  SuccessLike:
+    type: "objcet"
+    properties:
+      newLike:
+        schema:  
+        $ref: "#/definitions/Like"
+      newMessage:
+        schema:
+        $ref: "#/definitions/Message"
+  
+  FailedLike:
+    type: "objcet"
+    properties:
+      message:
+        type: "string"
+  
+  Message:
+    type: "object"
+    properties:
+      _id:
+        type: "ObjectId"
+      user:
+        type: "ObjectId"
+      content:
+        type: "string"
+      location:
+        type: "string"
+      tag:
+        type: "array"
+        items:
+          type: "string"
+      annoy:
+        type: "string"
+      createdAt:
+        type: "String"
+        default: Date.now
+      imgUrl: 
+        type: "array"
+        items:
+          type: "string"
+      likeNum:
+        type: Number
+      commentNum:
+        type: Number
+
+      
+
