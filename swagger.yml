@@ -131,7 +131,7 @@ paths:
       responses:
         200:
           description: "Success"
- 
+
   /user:
     post:
       tags:
@@ -350,19 +350,17 @@ definitions:
         type: "String"
       unionId:
         type: "string"
-      userInfo: {
-        nickName: "String",
-        gender: "String",
-        city: "String",
-        language: "String",
-        province: "String",
-        country: "String",
-        avatarUrl: "String",
-      }
-      createdAt: {
-        type: "String",
-        default: Date.now,
-      }
+      userInfo:
+        nickName: "String"
+        gender: "String"
+        city: "String"
+        language: "String"
+        province: "String"
+        country: "String"
+        avatarUrl: "String"
+      createdAt:
+        type: "String"
+        default: Date.now
 
   Message:
     type: "object"
@@ -461,14 +459,18 @@ definitions:
       location:
         type: "string"
       tag:
-        type: ["string"]
+        type: "array"
+        items:
+          type: "string"
       annoy:
         type: "string"
       createdAt:
         type: "String"
         default: Date.now
       imgUrl: 
-        type: ["string"]
+        type: "array"
+        items:
+          type: "string"
       likeNum:
         type: Number
       commentNum:
