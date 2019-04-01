@@ -38,7 +38,11 @@
               imgUrl: [String],
               tag: String,
               location: String,
-              anony: String,
+              anony: {
+                gender: Boolean,
+                major: Boolean,
+                grade: Boolean,
+              },
               likes: [Like], // contains userId
               comments: [Comment], // array of ids
               created_at: String
@@ -83,7 +87,11 @@
                 imgUrl: [String],
                 tag: String,
                 location: String,
-                anony: String,
+                anony: {
+                  gender: Boolean,
+                  major: Boolean,
+                  grade: Boolean,
+                },
                 likes: [Like], // contains userId
                 comments: [Comment], // array of ids
                 created_at: String,
@@ -105,7 +113,11 @@
                 imgUrl: [String],
                 tag: String,
                 location: String,
-                anony: String,
+                anony: {
+                  gender: Boolean,
+                  major: Boolean,
+                  grade: Boolean,
+                },
             }
         }
       ```
